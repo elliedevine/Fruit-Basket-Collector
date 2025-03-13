@@ -1,5 +1,9 @@
 #include <stm32f031x6.h>
 #include "display.h"
+#include <stdlib.h>
+#include <time.h>
+//#include <cstdlib>  // For rand()
+//#include <ctime>    // For seeding rand()
 void initClock(void);
 void initSysTick(void);
 void SysTick_Handler(void);
@@ -10,6 +14,31 @@ void enablePullUp(GPIO_TypeDef *Port, uint32_t BitNumber);
 void pinMode(GPIO_TypeDef *Port, uint32_t BitNumber, uint32_t Mode);
 void playTune(uint32_t notes[], uint32_t durations[], int count);
 void showLives(int);
+
+#define SCREENWIDTH 100
+#define SCREENHEIGHT 100
+
+enum Fruittype{ NONE, CHERRY, BANANA, PEAR};
+int currentFruit = NONE;
+
+int getRandomX(int spritewidth)
+{
+	return rand() % (SCREENWIDTH - spritewidth);
+}
+
+int getRandomY(int spriteheight)
+{
+	return rand() % (SCREENHEIGHT - spriteheight);
+}
+
+void setup()
+{
+	#ifdef ARDUINO
+		randomSeed(analogRead(0));
+	#else
+		srand(time(NULL));
+	#endif
+}
 
 volatile uint32_t milliseconds;
 
@@ -107,13 +136,48 @@ void playTune(uint32_t notes[], uint32_t durations[], int count)
 	}
 	
 }
+
+/*
+void loop()
+{
+
+	uint16_t x = 50;
+	uint16_t y = 50;
+	// Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
+	if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
+	{
+		int randomX = getRandomX(9);
+		int randomY = getRandomY(10);
+		putImage(randomX, randomY, 9, 10, cherry, 0, 0);
+	}
+			
+	if (isInside(60,110,8,9,x,y) || isInside(60,110,8,9,x+8,y) || isInside(60,110,8,9,x,y+9) || isInside(60,110,8,9,x+8,y+9) )
+	{
+		int randomX = getRandomX(8);
+		int randomY = getRandomY(9);
+		putImage(randomX, randomY, 8, 9, banana, 0, 0);
+	
+	}
+			
+	if (isInside(80,40,8,12,x,y) || isInside(80,40,8,12,x+8,y) || isInside(80,40,8,12,x,y+12) || isInside(80,40,8,12,x+8,y+12) )
+	{
+		int randomX = getRandomX(8);
+		int randomY = getRandomY(12);
+		putImage(randomX, randomY, 8, 12, pear, 0, 0);
+	}
+
+	delay(1000);
+} */
+
 int main()
 {
+
 	int hinverted = 0;
 	int vinverted = 0;
 	int toggle = 0;
 	int hmoved = 0;
 	int vmoved = 0;
+	int fruitx, fruity;
 	uint16_t x = 50;
 	uint16_t y = 50;
 	uint16_t oldx = x;
@@ -186,8 +250,10 @@ int main()
 				
 				toggle = toggle ^ 1;
 			}
+
+			
 			// Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
-			if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
+			/*if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
 			{
 				delay(30);
 				//printTextX2("NOM!", 40, 20, RGBToWord(0xff,0xff,0), 0);
@@ -206,13 +272,103 @@ int main()
 				delay(30);
 				//printTextX2("NOM!", 40, 20, RGBToWord(0xff,0xff,0), 0);
 				putImage(70,130,8,12,pear,0,0);
+			} */
+
+			/*if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
+			{
+				int randomX = getRandomX(9);
+				int randomY = getRandomY(10);
+				putImage(randomX, randomY, 9, 10, cherry, 0, 0);
+			}
+					
+			if (isInside(60,110,8,9,x,y) || isInside(60,110,8,9,x+8,y) || isInside(60,110,8,9,x,y+9) || isInside(60,110,8,9,x+8,y+9) )
+			{
+				int randomX = getRandomX(8);
+				int randomY = getRandomY(9);
+				putImage(randomX, randomY, 8, 9, banana, 0, 0);
+			
+			}
+					
+			if (isInside(80,40,8,12,x,y) || isInside(80,40,8,12,x+8,y) || isInside(80,40,8,12,x,y+12) || isInside(80,40,8,12,x+8,y+12) )
+			{
+				int randomX = getRandomX(8);
+				int randomY = getRandomY(12);
+				putImage(randomX, randomY, 8, 12, pear, 0, 0);
+			}*/
+
+			    // If no fruit is currently on the screen, check for collisions
+				/*if (currentFruit == NONE) {
+					if (isInside(20, 80, 9, 10, x, y) ||
+						isInside(60, 110, 8, 9, x, y) ||
+						isInside(80, 40, 8, 12, x, y)) 
+					{
+						//delay(30);
+						
+						// Randomly choose a fruit
+						int fruitChoice = 1&&2&&3;  
+					
+						if (fruitChoice == 1) {
+							currentFruit = CHERRY;
+							fruitx = getRandomX(9);
+							fruity = getRandomY(10);
+							putImage(fruitx, fruity, 9, 10, cherry, 0, 0);
+						} 
+					   if (fruitChoice == 2) {
+							currentFruit = BANANA;
+							fruitx = getRandomX(8);
+							fruity = getRandomY(9);
+							putImage(fruitx, fruity, 8, 9, banana, 0, 0);
+						} 
+						if(fruitChoice == 3){
+							currentFruit = PEAR;
+							fruitx = getRandomX(8);
+							fruity = getRandomY(12);
+							putImage(fruitx, fruity, 8, 12, pear, 0, 0);
+						}
+					
+					}
+				}*/
+
+				if (currentFruit == NONE) {
+					if (isInside(20, 80, 9, 10, x, y) ||
+						isInside(60, 110, 8, 9, x, y) ||
+						isInside(80, 40, 8, 12, x, y)) 
+					{
+						// Seed random once at the start of the program (not inside loop)
+						srand(time(0));
+				
+						// Randomly choose a fruit (1, 2, or 3)
+						int fruitChoice = rand() % 3 + 1;  
+				
+						if (fruitChoice == 1) {
+							currentFruit = CHERRY;
+							fruitx = getRandomX(9);
+							fruity = getRandomY(10);
+							putImage(fruitx, fruity, 9, 10, cherry, 0, 0);
+						} 
+					    if (fruitChoice == 2) {
+							currentFruit = BANANA;
+							fruitx = getRandomX(8);
+							fruity = getRandomY(9);
+							putImage(fruitx, fruity, 8, 9, banana, 0, 0);
+						} 
+						if (fruitChoice == 3) {
+							currentFruit = PEAR;
+							fruitx = getRandomX(8);
+							fruity = getRandomY(12);
+							putImage(fruitx, fruity, 8, 12, pear, 0, 0);
+						}
+					}
+				}
+				delay(20);  // Small delay to control spawn rate
 			}
 			
 		}		
 		delay(50);
+
+		return 0;
 	}
-	return 0;
-}
+
 void initSysTick(void)
 {
 	SysTick->LOAD = 48000;
