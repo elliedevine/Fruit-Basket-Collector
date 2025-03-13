@@ -2,8 +2,7 @@
 #include "display.h"
 #include <stdlib.h>
 #include <time.h>
-//#include <cstdlib>  // For rand()
-//#include <ctime>    // For seeding rand()
+#include <sound.h>
 void initClock(void);
 void initSysTick(void);
 void SysTick_Handler(void);
@@ -82,92 +81,6 @@ const uint16_t pear[]=
 {
 	0,0,21306,0,0,0,0,0,0,0,0,21306,0,0,0,0,0,0,0,21306,0,0,0,0,0,0,60420,60420,60420,60420,0,0,0,54559,54559,54559,65535,60420,60420,0,0,54559,54559,54559,65535,65535,54559,60420,54559,54559,60420,54559,54559,54559,65535,60420,54559,54559,60420,60420,54559,54559,54559,60420,54559,65535,60420,60420,60420,54559,54559,60420,54559,54559,65535,54559,54559,54559,54559,60420,0,54559,54559,54559,54559,60420,60420,0,0,0,0,60420,60420,0,0,0,
 };
-const uint16_t heart[]=
-{
-	0,0,40224,0,0,0,40224,0,0,0,40224,40224,40224,0,40224,40224,40224,0,40224,40224,40224,40224,40224,40224,40224,40224,40224,0,40224,40224,40224,40224,40224,40224,40224,0,0,0,40224,40224,40224,40224,40224,0,0,0,0,0,40224,40224,40224,0,0,0,0,0,0,0,40224,0,0,0,0,
-};
-const uint16_t ten[]=
-{
-	0,0,65535,0,0,65535,65535,65535,65535,0,65535,65535,0,0,65535,0,0,65535,65535,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,0,0,65535,65535,65535,65535,65535,0,65535,65535,65535,65535,
-};
-const uint16_t twenty[]=
-{
-	0,65535,65535,65535,0,65535,65535,65535,65535,65535,65535,0,65535,0,65535,0,0,65535,65535,0,0,65535,0,65535,0,0,65535,0,0,65535,65535,0,65535,0,0,65535,0,65535,65535,0,0,65535,0,0,65535,65535,65535,0,0,0,65535,0,0,65535,65535,65535,65535,65535,0,65535,65535,65535,65535,
-};
-const uint16_t thirty[]=
-{
-	0,65535,65535,65535,0,65535,65535,65535,65535,65535,0,0,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,0,0,65535,0,65535,65535,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,0,0,65535,65535,0,0,65535,0,65535,0,0,65535,0,65535,65535,65535,0,65535,65535,65535,65535,
-};
-const uint16_t forty[]=
-{
-	65535,0,0,65535,0,65535,65535,65535,65535,65535,0,0,65535,0,65535,0,0,65535,65535,0,0,65535,0,65535,0,0,65535,65535,65535,65535,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,65535,65535,65535,
-};
-const uint16_t fifty[]=
-{
-	65535,65535,65535,65535,0,65535,65535,65535,65535,65535,0,0,0,0,65535,0,0,65535,65535,0,0,0,0,65535,0,0,65535,65535,65535,65535,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,0,0,65535,0,0,0,65535,0,65535,0,0,65535,65535,65535,65535,65535,0,65535,65535,65535,65535,
-};
-void showLives(int lives)
-{
-    fillRectangle(91, 0, 36, 12, 0);  // Clear previous lives display
-    int startx = 91; // Starting position for hearts
-
-    while (lives--)
-    {
-        putImage(startx, 12, 9, 7, heart, 0, 0);  // Draw heart at updated position
-        startx += 12;  // Move position for next heart
-    }
-}
-
-void playTune(uint32_t notes[], uint32_t durations[], int count)
-{
-	uint16_t x = 50;
-	uint16_t y = 50;
-	int index = 0;
-	while (index < count)
-	{
-		if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
-		{
-		playNote(notes[index]);
-		delay(durations[index]);
-		playNote(0);
-		delay(100);
-		index++;
-		}
-	}
-	
-}
-
-/*
-void loop()
-{
-
-	uint16_t x = 50;
-	uint16_t y = 50;
-	// Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
-	if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
-	{
-		int randomX = getRandomX(9);
-		int randomY = getRandomY(10);
-		putImage(randomX, randomY, 9, 10, cherry, 0, 0);
-	}
-			
-	if (isInside(60,110,8,9,x,y) || isInside(60,110,8,9,x+8,y) || isInside(60,110,8,9,x,y+9) || isInside(60,110,8,9,x+8,y+9) )
-	{
-		int randomX = getRandomX(8);
-		int randomY = getRandomY(9);
-		putImage(randomX, randomY, 8, 9, banana, 0, 0);
-	
-	}
-			
-	if (isInside(80,40,8,12,x,y) || isInside(80,40,8,12,x+8,y) || isInside(80,40,8,12,x,y+12) || isInside(80,40,8,12,x+8,y+12) )
-	{
-		int randomX = getRandomX(8);
-		int randomY = getRandomY(12);
-		putImage(randomX, randomY, 8, 12, pear, 0, 0);
-	}
-
-	delay(1000);
-} */
 
 int main()
 {
@@ -177,7 +90,19 @@ int main()
 	int toggle = 0;
 	int hmoved = 0;
 	int vmoved = 0;
-	int fruitx, fruity;
+	int cherryX = 20;
+	int cherryY = 80;
+	int bananaX = 60;
+	int bananaY = 110;
+	int pearX = 80;
+	int pearY = 40;
+	int oldcherryX = cherryX;
+	int oldcherryY = cherryY;
+	int oldbananaX = bananaX;
+	int oldbananaY = bananaY;
+	int oldpearX = pearX;
+	int oldpearY = pearY;
+	int score = 0;
 	uint16_t x = 50;
 	uint16_t y = 50;
 	uint16_t oldx = x;
@@ -185,10 +110,12 @@ int main()
 	initClock();
 	initSysTick();
 	setupIO();
+	initSound();
 	//int spriteHotspot = ccp(60, 20);
-	putImage(20,80,9,10,cherry,0,0);
-	putImage(60,110,8,9,banana,0,0);
-	putImage(80,40,8,12,pear,0,0);
+	printText("SCORE:", 40, 20, RGBToWord(0xff, 0xff, 0), score);
+	putImage(cherryX,cherryY,9,10,cherry,0,0);
+	putImage(bananaX,bananaY,8,9,banana,0,0);
+	//putImage(80,40,8,12,pear,0,0);
 	while(1)
 	{
 		hmoved = vmoved = 0;
@@ -205,7 +132,7 @@ int main()
 		if ((GPIOB->IDR & (1 << 5))==0) // left pressed
 		{			
 			
-			if (x > 10)
+			if (x > 0)
 			{
 				x = x - 1;
 				hmoved = 1;
@@ -223,7 +150,7 @@ int main()
 		}
 		if ( (GPIOA->IDR & (1 << 8)) == 0) // up pressed
 		{			
-			if (y > 16)
+			if (y > 0)
 			{
 				y = y - 1;
 				vmoved = 1;
@@ -253,118 +180,66 @@ int main()
 
 			
 			// Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
-			/*if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
-			{
-				delay(30);
-				//printTextX2("NOM!", 40, 20, RGBToWord(0xff,0xff,0), 0);
-				putImage(45,45,9,10,cherry,0,0);
-			}
-
-			if (isInside(60,110,8,9,x,y) || isInside(60,110,8,9,x+8,y) || isInside(60,110,8,9,x,y+9) || isInside(60,110,8,9,x+8,y+9) )
-			{
-				delay(30);
-				//printTextX2("NOM!", 40, 20, RGBToWord(0xff,0xff,0), 0);
-				putImage(35,80,8,9,banana,0,0);
-			}
-
-			if (isInside(80,40,8,12,x,y) || isInside(80,40,8,12,x+8,y) || isInside(80,40,8,12,x,y+12) || isInside(80,40,8,12,x+8,y+12) )
-			{
-				delay(30);
-				//printTextX2("NOM!", 40, 20, RGBToWord(0xff,0xff,0), 0);
-				putImage(70,130,8,12,pear,0,0);
-			} */
-
-			/*if (isInside(20,80,9,10,x,y) || isInside(20,80,9,10,x+9,y) || isInside(20,80,9,10,x,y+10) || isInside(20,80,9,10,x+9,y+10) )
-			{
-				int randomX = getRandomX(9);
-				int randomY = getRandomY(10);
-				putImage(randomX, randomY, 9, 10, cherry, 0, 0);
-			}
-					
-			if (isInside(60,110,8,9,x,y) || isInside(60,110,8,9,x+8,y) || isInside(60,110,8,9,x,y+9) || isInside(60,110,8,9,x+8,y+9) )
-			{
-				int randomX = getRandomX(8);
-				int randomY = getRandomY(9);
-				putImage(randomX, randomY, 8, 9, banana, 0, 0);
 			
-			}
-					
-			if (isInside(80,40,8,12,x,y) || isInside(80,40,8,12,x+8,y) || isInside(80,40,8,12,x,y+12) || isInside(80,40,8,12,x+8,y+12) )
+			if (isInside(cherryX, cherryY, 9, 10, x, y) || 
+    				isInside(cherryX, cherryY, 9, 10, x + 9, y) || 
+    				isInside(cherryX, cherryY, 9, 10, x, y + 10) || 
+    				isInside(cherryX, cherryY, 9, 10, x + 9, y + 10)) 
 			{
-				int randomX = getRandomX(8);
-				int randomY = getRandomY(12);
-				putImage(randomX, randomY, 8, 12, pear, 0, 0);
-			}*/
+				score = score + 10;
+				printText("SCORE: %d", 40, 20, RGBToWord(0xff, 0xff, 0), score);
+    			delay(100);
+    			//printTextX2("NOM!", 40, 20, RGBToWord(0xff, 0xff, 0), 0);
+				playNote(1175);
+				delay(100);
+				playNote(0);
 
-			    // If no fruit is currently on the screen, check for collisions
-				/*if (currentFruit == NONE) {
-					if (isInside(20, 80, 9, 10, x, y) ||
-						isInside(60, 110, 8, 9, x, y) ||
-						isInside(80, 40, 8, 12, x, y)) 
-					{
-						//delay(30);
-						
-						// Randomly choose a fruit
-						int fruitChoice = 1&&2&&3;  
-					
-						if (fruitChoice == 1) {
-							currentFruit = CHERRY;
-							fruitx = getRandomX(9);
-							fruity = getRandomY(10);
-							putImage(fruitx, fruity, 9, 10, cherry, 0, 0);
-						} 
-					   if (fruitChoice == 2) {
-							currentFruit = BANANA;
-							fruitx = getRandomX(8);
-							fruity = getRandomY(9);
-							putImage(fruitx, fruity, 8, 9, banana, 0, 0);
-						} 
-						if(fruitChoice == 3){
-							currentFruit = PEAR;
-							fruitx = getRandomX(8);
-							fruity = getRandomY(12);
-							putImage(fruitx, fruity, 8, 12, pear, 0, 0);
-						}
-					
-					}
-				}*/
+    
+    // Clear old fruit location
+    fillRectangle(cherryX, cherryY, 9, 10, 0);
 
-				if (currentFruit == NONE) {
-					if (isInside(20, 80, 9, 10, x, y) ||
-						isInside(60, 110, 8, 9, x, y) ||
-						isInside(80, 40, 8, 12, x, y)) 
-					{
-						// Seed random once at the start of the program (not inside loop)
-						srand(time(0));
-				
-						// Randomly choose a fruit (1, 2, or 3)
-						int fruitChoice = rand() % 3 + 1;  
-				
-						if (fruitChoice == 1) {
-							currentFruit = CHERRY;
-							fruitx = getRandomX(9);
-							fruity = getRandomY(10);
-							putImage(fruitx, fruity, 9, 10, cherry, 0, 0);
-						} 
-					    if (fruitChoice == 2) {
-							currentFruit = BANANA;
-							fruitx = getRandomX(8);
-							fruity = getRandomY(9);
-							putImage(fruitx, fruity, 8, 9, banana, 0, 0);
-						} 
-						if (fruitChoice == 3) {
-							currentFruit = PEAR;
-							fruitx = getRandomX(8);
-							fruity = getRandomY(12);
-							putImage(fruitx, fruity, 8, 12, pear, 0, 0);
-						}
-					}
-				}
-				delay(20);  // Small delay to control spawn rate
-			}
+    // Update old position before spawning new fruit
+    oldcherryX = cherryX;
+    oldcherryY = cherryY;
+
+    // Randomize new fruit position
+    cherryX = getRandomX(9);
+    cherryY = getRandomY(10);
+
+    // Place new fruit
+    putImage(cherryX, cherryY, 9, 10, cherry, 0, 0);
+}
+
+if (isInside(bananaX, bananaY, 8, 9, x, y) || 
+isInside(bananaX, bananaY, 8, 9, x + 8, y) || 
+isInside(bananaX, bananaY, 8, 9, x, y + 9) || 
+isInside(bananaX, bananaY, 8, 9, x + 8, y + 9)) 
+{
+delay(100);
+//printTextX2("NOM!", 40, 20, RGBToWord(0xff, 0xff, 0), 0);
+playNote(900);
+delay(100);
+playNote(0);
+
+// Clear old fruit location
+fillRectangle(bananaX, bananaY, 8, 9, 0);
+
+// Update old position before spawning new fruit
+oldbananaX = bananaX;
+oldbananaY = bananaY;
+
+// Randomize new fruit position
+bananaX = getRandomX(8);
+bananaY= getRandomY(9);
+
+// Place new fruit
+putImage(bananaX, bananaY, 8, 9, banana, 0, 0);
+}
+					
+		delay(20);  // Small delay to control spawn rate
+	}
 			
-		}		
-		delay(50);
+	}		
 
 		return 0;
 	}
