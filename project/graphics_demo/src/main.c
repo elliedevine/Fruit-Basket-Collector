@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sound.h>
+#include <stdio.h>
+void mainMenu();
 void initClock(void);
 void initSysTick(void);
 void SysTick_Handler(void);
@@ -31,6 +33,7 @@ int getRandomY(int spriteheight)
 
 volatile uint32_t milliseconds;
 
+//all of the dimensions of the sprites from python
 const uint16_t girlsprite[] = 
 {
 	0,0,0,784,1048,1048,1048,1040,784,520,520,0,0,0,0,256,2872,6016,6288,6280,6280,6280,6008,6008,5232,2616,264,0,520,2872,5488,6800,6280,6272,6272,6272,6008,6272,6528,5224,2088,0,2352,5744,14464,52288,11321,52809,11841,60737,11841,52537,44360,13680,3400,0,3656,6272,46704,10545,36460,54686,5518,13437,5502,20316,51505,45400,3656,264,2872,5488,22120,60746,53158,62695,38863,22479,46295,3733,11322,13144,4704,2616,520,3392,37712,52810,29118,63479,14815,23007,63215,53414,52538,13400,4968,2872,784,3912,54112,60745,54157,23503,65239,65239,7111,37757,19777,46176,4176,520,3128,6016,7064,62576,62306,13693,46997,63637,54900,5218,46448,6536,4440,520,3136,6016,7864,7584,36960,2081,26642,50961,35368,37736,7592,7856,5752,2608,784,2872,5488,5496,2376,51209,12291,19970,1808,2368,4712,4968,3656,2352,0,50200,18737,51488,35089,21003,55813,22532,61194,1809,50712,51241,42528,520,0,10562,19531,34826,45315,31749,7693,65037,23045,53251,50945,52291,26930,0,0,61027,37756,35618,45571,64773,24334,32526,56325,61699,35354,53860,44627,0,0,27458,44379,50192,59393,46596,65294,32526,54532,34561,33552,36171,27450,0,0,49680,8976,24576,1024,3587,46852,30468,52482,41472,16384,58128,33288,0,0,0,0,16384,42265,2338,51474,59665,18201,25617,16384,0,0,0,0,0,0,40960,1833,43065,58400,41752,10281,50977,40960,0,0,0,0,0,0,16640,51488,43816,10008,1816,19232,51480,16640,0,0,0,
@@ -81,10 +84,6 @@ int main()
 	int oldbananaY = bananaY;
 	int oldpearX = pearX;
 	int oldpearY = pearY;
-	int menuX = 30;
-	int menuY = 30;
-	int oldmenuX = menuX;
-	int oldmenuY = menuY;
 	int score = 0;
 	uint16_t x = 50;
 	uint16_t y = 50;
@@ -94,33 +93,9 @@ int main()
 	initSysTick();
 	setupIO();
 	initSound();
+	//main menu display function
+	mainMenu();
 
-	//showing the menu graphic and the starting text to begin the game
-	putImage(menuX, menuY, 70, 70, menu, 0, 0);
-	printText("Press UP to start", 5, 100 , RGBToWord(255, 255, 255), RGBToWord(0, 0, 0)); 
-
-	while (1) 
-	{
-		// Check if button is pressed
-		if ((GPIOA->IDR & (1 << 8)) == 0)  
-		{
-			delay(100);  
-	
-			// Wait for button release
-			while ((GPIOA->IDR & (1 << 8)) == 0);  
-			delay(100); 
-	
-			// Allow image to be seen before clearing
-			delay(500);  
-	
-			// Clear the image
-			fillRectangle(menuX, menuY, 70, 70, 0);  
-			fillRectangle(5, 100, 120, 20, RGBToWord(0, 0, 0));
-			
-			break;  
-		}
-	}
-	
 	//showing the score in the top right corner and putting the fruits on screen
 	printText("SCORE:", 60, 10, RGBToWord(255, 255, 255), RGBToWord(0, 0, 0));
 	putImage(cherryX,cherryY,9,10,cherry,0,0);
@@ -190,15 +165,12 @@ int main()
 			}
 
 			
-			// Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
+// Now check for an overlap by checking to see if ANY of the 4 corners of deco are within the target area
 			
-if (isInside(cherryX, cherryY, 9, 10, x, y) || 
-    isInside(cherryX, cherryY, 9, 10, x + 9, y) || 
-    isInside(cherryX, cherryY, 9, 10, x, y + 10) || 
-    isInside(cherryX, cherryY, 9, 10, x + 9, y + 10)) 
-	{
-		//when a fruit is collected it adds 10 to the score
-		score += 10;
+if (isInside(cherryX, cherryY, 9, 10, x, y) || isInside(cherryX, cherryY, 9, 10, x + 9, y) ||  isInside(cherryX, cherryY, 9, 10, x, y + 10) || isInside(cherryX, cherryY, 9, 10, x + 9, y + 10)) 
+{
+		//when a cherry is collected it adds 30 to the score
+		score += 30;
 		char scoreText[20];
 		sprintf(scoreText, "SCORE:%d", score);
 				
@@ -228,12 +200,10 @@ if (isInside(cherryX, cherryY, 9, 10, x, y) ||
     	putImage(cherryX, cherryY, 9, 10, cherry, 0, 0);
 }
 
-if (isInside(bananaX, bananaY, 8, 9, x, y) || 
-	isInside(bananaX, bananaY, 8, 9, x + 8, y) || 
-	isInside(bananaX, bananaY, 8, 9, x, y + 9) || 
-	isInside(bananaX, bananaY, 8, 9, x + 8, y + 9)) 
-	{
-		score += 10;
+if (isInside(bananaX, bananaY, 8, 9, x, y) || isInside(bananaX, bananaY, 8, 9, x + 8, y) || isInside(bananaX, bananaY, 8, 9, x, y + 9) || isInside(bananaX, bananaY, 8, 9, x + 8, y + 9)) 
+{
+		//when a banana is collected it adds 20 to the score
+		score += 20;
 		char scoreText[20];
 		sprintf(scoreText, "SCORE:%d", score);
 	
@@ -262,11 +232,9 @@ if (isInside(bananaX, bananaY, 8, 9, x, y) ||
 		putImage(bananaX, bananaY, 8, 9, banana, 0, 0);
 }
 
-if (isInside(pearX, pearY, 8, 12, x, y) || 
-	isInside(pearX, pearY, 8, 12, x + 8, y) || 
-	isInside(pearX, pearY, 8, 12, x, y + 12) || 
-	isInside(pearX, pearY, 8, 12, x + 8, y + 12)) 
-	{
+if (isInside(pearX, pearY, 8, 12, x, y) || 	isInside(pearX, pearY, 8, 12, x + 8, y) || isInside(pearX, pearY, 8, 12, x, y + 12) || isInside(pearX, pearY, 8, 12, x + 8, y + 12)) 
+{
+		//when a pear is collected it adds 10 to the score
 		score += 10;
 		char scoreText[20];
 		sprintf(scoreText, "SCORE:%d", score);
@@ -294,12 +262,74 @@ if (isInside(pearX, pearY, 8, 12, x, y) ||
 
 		// Place new fruit
 		putImage(pearX, pearY, 8, 12, pear, 0, 0);
-}		
-		delay(20);  // Small delay to control spawn rate
+}
+//adding a static number for the player to win the game/finish the game
+	if (score == 200)
+	{
+		//clearing all the sprites currently on the screen
+		fillRectangle(cherryX, cherryY, 9, 10, 0);
+		fillRectangle(bananaX, bananaY, 8, 9, 0);
+		fillRectangle(pearX, pearY, 8, 12, 0);
+		fillRectangle(oldx, oldy, 14, 19, 0);
+		fillRectangle(60, 10, 100, 20, RGBToWord(0, 0, 0));
+		printText("YOU WIN!", 40, 50 , RGBToWord(255, 255, 255), RGBToWord(0, 0, 0)); 
+		printText("Press DOWN to home", 3, 100 , RGBToWord(255, 255, 255), RGBToWord(0, 0, 0)); 
+
+		//waiting for the down button to be pressed and to send the player back to the menu
+		while(1)
+		{
+			if ((GPIOA->IDR & (1<<11)) == 0)
+			{
+				fillRectangle(3, 100, 125, 20, RGBToWord(0, 0, 0));
+				fillRectangle(40, 50, 100, 20, RGBToWord(0, 0, 0));
+				delay(100);
+				while ((GPIOA->IDR & (1<<11)) == 0);
+				delay(100);
+				//returning to the mainMenu function
+				mainMenu();
+				break;
+			
+			}
+		}
+    }
 	}	
+	//sprite delay when moving/playing
+	delay(20);  
 	}		
 		return 0;
 	}
+
+//main menu function
+void mainMenu()
+{
+	int menuX = 30;
+	int menuY = 30;
+
+	putImage(menuX, menuY, 70, 70, menu, 0, 0);
+	printText("Press UP to start", 5, 100 , RGBToWord(255, 255, 255), RGBToWord(0, 0, 0)); 
+
+	while (1) 
+	{
+		// Check if button is pressed
+		if ((GPIOA->IDR & (1 << 8)) == 0)  
+		{
+			delay(100);  
+	
+			// Wait for button release
+			while ((GPIOA->IDR & (1 << 8)) == 0);  
+			delay(100); 
+	
+			// Allow image to be seen before clearing
+			delay(500);  
+	
+			// Clear the image
+			fillRectangle(menuX, menuY, 70, 70, 0);  
+			fillRectangle(5, 100, 120, 20, RGBToWord(0, 0, 0));
+			
+			return;  
+		}
+	}
+}
 
 void initSysTick(void)
 {
